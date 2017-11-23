@@ -1,8 +1,8 @@
 import React from 'react';
 import {connect} from 'react-redux';
 
-const Failure = ({children}) => {
+const ElseIf = ({children}) => {
     return <span>{children}</span>
 }
 
-export default connect()(Failure);
+export default connect()(ElseIf);

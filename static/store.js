@@ -15,13 +15,20 @@ export default () => {
     }
 
     if (!state) {
-        state = initialData;
+        state = {};
     }
 
+    // position
+    state.book = state.book || 1
+    state.section = state.section || 1
+
+    // player
     state.abilities = state.abilities || {}
     state.profession = state.profession || "Priest"
-    state.section = state.section || 1
-    state.shards = state.shards || 0
+    state.shards = state.shards || 16
+    state.maxStamina = state.maxStamina || 9
+    state.stamina = state.stamina || 9
+    state.titles = state.titles || {}
 
     let abilities = [
         'charisma', 'combat', 'magic',

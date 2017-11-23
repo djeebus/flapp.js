@@ -1,16 +1,34 @@
 var fs = require('fs');
 
+let books = {}
 
-const TOTAL_FILES = 680;
+let dirs = fs.readdirSync(__dirname + '/books/');
+for (let dirIndex in dirs) {
+    let dirname = dirs[dirIndex]
 
-var results = [];
-for (let x = 1; x <= TOTAL_FILES; x++) {
-    let fname = __dirname + '/book1/' + x + '.xml';
+    if (!dirname.startsWith('book')) {
+        continue
+    }
 
-    console.log('reading ' + fname);
-    let data = fs.readFileSync(fname, 'utf8');
+    let fulldirname = __dirname + '/books/' + dirname
+    let stat = fs.statSync(fulldirname)
+    if (!stat.isDirectory()) {
+        continue
+    }
 
-    results.push(data);
+    books[dirname] = {}
+
+    let files = fs.readdirSync(fulldirname)
+    for (let fileIndex in files) {
+        let fname = files[fileIndex]
+        if (!fname.endsWith('.xml')) {
+            continue
+        }
+
+        let fullfname = fulldirname + '/' + fname
+        let data = fs.readFileSync(fullfname, 'utf-8')
+        books[dirname][fname] = data
+    }
 }
 
-fs.writeFileSync(__dirname + '/book1.json', JSON.stringify(results));
+fs.writeFileSync(__dirname + '/books.json', JSON.stringify(books))

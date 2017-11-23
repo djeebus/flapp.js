@@ -11,6 +11,8 @@ module.exports = {
         }
     },
 
+    devtool: 'source-map',
+
     entry: [
         'babel-polyfill',
         './static/app.js',

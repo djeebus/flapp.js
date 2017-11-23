@@ -3,7 +3,12 @@ import {connect} from 'react-redux';
 
 import {gainCodeword} from '../actions';
 
-const Tick = function ({children, onClick}) {
+const Tick = function ({children, hidden, onClick}) {
+    if (hidden == "t") {
+        onClick()
+        return null;
+    }
+
     if (children.length > 0) {
         return (
             <a href="javascript:void(0)" onClick={onClick}>

@@ -1,30 +1,31 @@
 import React from 'react';
 import {connect} from 'react-redux';
-import book1 from 'json-loader!../../book1.json';
 
-import Armour from './armour';
-import Choice from './choice';
-import Choices from './choices';
-import Difficulty from './difficulty';
-import Else from './else';
-import Failure from './failure';
-import Gain from './gain';
-import GoTo from './goto';
-import Group from './group';
-import Header from './header';
-import If from './if';
-import Item from './item';
-import Lose from './lose';
-import Market from './market';
-import Outcomes from './outcomes';
-import Rest from './rest';
-import Set from './set';
-import Success from './success';
-import Tick from './tick';
-import Tool from './tool';
-import Trade from './trade';
-import Unknown from './unknown';
-import Weapon from './weapon';
+import Armour from '../nodes/armour';
+import Choice from '../nodes/choice';
+import Choices from '../nodes/choices';
+import Difficulty from '../nodes/difficulty';
+import Else from '../nodes/else';
+import ElseIf from '../nodes/elseif';
+import Failure from '../nodes/failure';
+import Gain from '../nodes/gain';
+import GoTo from '../nodes/goto';
+import Group from '../nodes/group';
+import Header from '../nodes/header';
+import If from '../nodes/if';
+import Item from '../nodes/item';
+import Lose from '../nodes/lose';
+import Market from '../nodes/market';
+import Outcomes from '../nodes/outcomes';
+import Rest from '../nodes/rest';
+import Set from '../nodes/set';
+import Success from '../nodes/success';
+import Text from '../nodes/text';
+import Tick from '../nodes/tick';
+import Tool from '../nodes/tool';
+import Trade from '../nodes/trade';
+import Unknown from '../nodes/unknown';
+import Weapon from '../nodes/weapon';
 
 const
     ELEMENT_NODE = 1,
@@ -36,16 +37,14 @@ const boolAttr = (attrs, name) => attrs.getNamedItem(name).value == 't';
 const intAttr = (attrs, name) => parseInt(attrs.getNamedItem(name).value);
 const textAttr = (attrs, name) => attrs.getNamedItem(name).value;
 
-class Section extends React.Component {
-    registerSuccess(onSuccess) {
-
-    }
-
+class View extends React.Component {
     *parseNodes(nodes) {
         for (let x = 0; x < nodes.length; x++) {
             let node = nodes[x];
             node = this.parseNode(node, x);
-            yield node
+            if (node) {
+                yield node
+            }
         }
     }
 
@@ -55,8 +54,10 @@ class Section extends React.Component {
                 return this.parseElementNode(node, index);
 
             case TEXT_NODE:
-                return node.wholeText;
-
+                let text = node.wholeText.trim()
+                if (text) {
+                    return node.wholeText
+                }
         }
     }
 
@@ -64,9 +65,8 @@ class Section extends React.Component {
         let attrs = node.attributes;
 
         let props = {
+            game: this.props.game,
             key: index,
-            registerSuccess: self.registerSuccess,
-            registerFailure: self.registerFailure,
         };
 
         for (var x = 0; x < attrs.length; x++) {
@@ -83,6 +83,7 @@ class Section extends React.Component {
             'choices': Choices,
             'difficulty': Difficulty,
             'else': Else,
+            'elseif': ElseIf,
             'failure': Failure,
             'gain': Gain,
             'goto': GoTo,
@@ -96,6 +97,7 @@ class Section extends React.Component {
             'rest': Rest,
             'set': Set,
             'success': Success,
+            'text': Text,
             'tick': Tick,
             'tool': Tool,
             'trade': Trade,
@@ -111,7 +113,6 @@ class Section extends React.Component {
             case 'b': return <b {...props}>{children}</b>
             case 'i': return <i {...props}>{children}</i>
             case 'p': return <p {...props}>{children}</p>
-            case 'text': return <span {...props}>{children}</span>
         }
 
         console.warn('Unknown tag: ', node.localName)
@@ -119,25 +120,13 @@ class Section extends React.Component {
     }
 
     render() {
-        let section = this.props.section
-        let index = section - 1;
-
-        let xml = book1[index];
-        if (!xml) {
-            throw "cannot find section " + section;
-        }
-
-        let parser = new DOMParser();
-        let doc = parser.parseFromString(xml, 'text/xml');
-
-        section = doc.documentElement;
-
+        let section = this.props.game.getSection()
         let attrs = section.attributes;
         let name = textAttr(attrs, 'name')
 
         return (
             <div>
-                <h1>#{name ? name.value : "unknown"}</h1>
+                <h1>#{name || "unknown"}</h1>
                 {[...this.parseNodes(section.childNodes)]}
             </div>
         );
@@ -147,8 +136,9 @@ class Section extends React.Component {
 export default connect(
     (state, ownProps) => {
         return {
+            book: state.book,
             section: state.section,
         };
     },
     (dispatch, ownProps) => { return {}; },
-)(Section);
+)(View);

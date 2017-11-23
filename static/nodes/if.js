@@ -4,7 +4,7 @@ import React from 'react';
 
 const canExecute = ({
     safeAddGod, shards, playerShards, codeword, playerCodewords, profession,
-    playerProfession,
+    playerProfession, title, playerTitles,
 }) => {
     if (shards) {
         shards = parseInt(shards);
@@ -21,6 +21,12 @@ const canExecute = ({
 
     if (profession) {
         if (playerProfession !== profession) {
+            return false;
+        }
+    }
+
+    if (title) {
+        if (playerTitles[title] !== true) {
             return false;
         }
     }
@@ -43,6 +49,7 @@ const mapStateToProps = state => {
         playerCodewords: state.codewords,
         playerProfession: state.profession,
         playerShards: state.shards,
+        playerTitles: state.titles,
     };
 }
 
