@@ -8,7 +8,7 @@ class Lose extends React.Component {
         const {group} = this.props
 
         if (group) {
-            group.register(onClick)
+            group.register(this.props.onClick)
         }
     }
 

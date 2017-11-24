@@ -3,6 +3,7 @@
     "dev": "webpack-dev-server"
   },
   "dependencies": {
+    "query-string": "^5.0.1",
     "react": "^16.1.1",
     "react-dom": "^16.1.1",
     "react-redux": "^5.0.6",

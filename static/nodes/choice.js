@@ -3,25 +3,27 @@ import React from 'react';
 
 import {goToSection} from '../actions';
 
-const Choice = ({children, onClick, section}) => {
-    return (
-        <li>
-            <a
-                href="javascript:void(0)"
-                onClick={() => onClick(section)}
-            >
-                {children}
-            </a>
-        </li>
-    )
-}
+class Choice extends React.Component {
+    execute() {
+        const {game} = this.props
 
-export default connect(
-    (state, props) => {return {}},
-    (dispatch, {section}) => {
-        return {
-            onClick: () => dispatch(goToSection(section)),
-        };
+        game.goToSection(null, section)
     }
 
-)(Choice);
+    render() {
+        const {children, onClick, section} = this.props
+
+        return (
+            <li>
+                <a
+                    href="javascript:void(0)"
+                    onClick={this.execute.bind(this)}
+                >
+                    {children}
+                </a>
+            </li>
+        )
+    }
+}
+
+export default Choice

@@ -4,7 +4,7 @@ import React from 'react';
 
 const canExecute = ({
     safeAddGod, shards, playerShards, codeword, playerCodewords, profession,
-    playerProfession, title, playerTitles,
+    playerProfession, title, playerTitles, ticks, sectionTicks,
 }) => {
     if (shards) {
         shards = parseInt(shards);
@@ -31,12 +31,24 @@ const canExecute = ({
         }
     }
 
+    if (ticks != undefined) {
+        ticks = parseInt(ticks)
+        if (ticks != sectionTicks) {
+            return false;
+        }
+    }
+
     return true;
 }
 
 const If = function (props) {
     let attrs = {}
-    if (!canExecute(props)) {
+    let result = canExecute(props);
+    if (props.not == "t") {
+        result = !result
+    }
+
+    if (!result) {
         attrs['disabled'] = 'disabled'
         attrs['style'] = {'textDecorationLine': 'line-through'}
     }
@@ -44,12 +56,13 @@ const If = function (props) {
     return <span {...attrs}>{props.children}</span>
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state, {game}) => {
     return {
         playerCodewords: state.codewords,
         playerProfession: state.profession,
         playerShards: state.shards,
         playerTitles: state.titles,
+        sectionTicks: game.getTicks(),
     };
 }
 

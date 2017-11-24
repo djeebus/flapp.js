@@ -1,29 +1,54 @@
 import React from 'react';
 import {connect} from 'react-redux';
 
-import {gainCodeword} from '../actions';
+import {gainCodeword, addTick} from '../actions';
 
-const Tick = function ({children, hidden, onClick}) {
-    if (hidden == "t") {
-        onClick()
-        return null;
+class Tick extends React.Component {
+    componentDidMount() {
+        const {group} = this.props
+        if (!group) {
+            this.props.execute()
+        }
     }
 
-    if (children.length > 0) {
-        return (
-            <a href="javascript:void(0)" onClick={onClick}>
-                {children}
-            </a>
-        );
-    } else {
-        return (
-            <span />
-        )
+    execute() {
+        this.props.execute()
+    }
+
+    render() {
+        const {children, hidden, onClick} = this.props
+
+        if (hidden == "t") {
+            onClick()
+            return null;
+        }
+
+        if (children.length > 0) {
+            return (
+                <a href="javascript:void(0)" onClick={onClick}>
+                    {children}
+                </a>
+            );
+        } else {
+            return (
+                <span>put a tick there now</span>
+            )
+        }
     }
 }
 
-const mapDispatchToProps = (dispatch, {codeword, god}) => {
+const mapStateToProps = (state, {game}) => {
+    return {
+        ticks: game.getTicks(),
+    }
+}
+
+const mapDispatchToProps = (dispatch, {codeword, game, god}) => {
     const execute = () => {
+        const boxes = game.getBoxes()
+        const ticks = game.getTicks()
+        boxes && boxes > ticks && dispatch(addTick())
+
         codeword && dispatch(gainCodeword(codeword));
         god && dispatch(tickGod(god));
     }

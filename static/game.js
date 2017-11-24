@@ -1,12 +1,56 @@
 import books from 'json-loader!../books.json';
-import { gainStamina, loseShards } from './actions';
+import {GO_TO_SECTION, gainStamina, loseShards, addTick } from './actions';
 
 export class Game {
     constructor(store) {
         this.store = store
+        this.reset()
+    }
 
-        this.onSuccess = null
-        this.onFailure = null
+    getSection() {
+        let state = this.store.getState()
+        let bookId = state.book
+        let sectionId = state.section
+
+        let xml = books['book' + bookId][sectionId + '.xml']
+        if (!xml) {
+            throw `cannot find ${bookId}:${sectionId} `;
+        }
+
+        let parser = new DOMParser();
+        let doc = parser.parseFromString(xml, 'text/xml');
+        console.log('section', doc)
+
+        let section = doc.documentElement
+
+        return section
+    }
+
+    getBoxes() {
+        const doc = this.getSection()
+        const attrs = doc.attributes
+
+        let item = attrs.getNamedItem('boxes')
+        if (item == null) {
+            return null
+        }
+
+        return parseInt(item.value);
+    }
+
+    getTicks() {
+        let state = this.store.getState()
+
+        let bookId = parseInt(state.book)
+        let sectionId = parseInt(state.section)
+
+        let bookTicks = state.ticks[bookId] || {}
+        return bookTicks[sectionId] || 0
+    }
+
+    registerFailure(onFailure) {
+        console.log('storing onFailure')
+        this.onFailure = onFailure
     }
 
     registerSuccess(onSuccess) {
@@ -14,9 +58,8 @@ export class Game {
         this.onSuccess = onSuccess
     }
 
-    registerFailure(onFailure) {
-        console.log('storing onFailure')
-        this.onFailure = onFailure
+    registerOutcomes(outcomes) {
+        this.outcomes = outcomes
     }
 
     _success() {
@@ -41,6 +84,16 @@ export class Game {
         } else {
             this._failure()
         }
+    }
+
+    performRandomRoll(count) {
+        count = parseInt(count)
+        let result = 0;
+        for (let x = 0; x < count; x++) {
+            result += this.roll()
+        }
+
+        this.outcomes.execute(result)
     }
 
     rest(shards, stamina) {
@@ -68,30 +121,31 @@ export class Game {
     }
 
     roll() {
-        return Math.floor(Math.random() * 6) + 1;
+        const result = Math.floor(Math.random() * 6) + 1;
+        console.log(`roll = ${result}`)
+        return result
     }
 
-    reset(state) {
+    reset() {
         this.onSuccess = null
         this.onFailure = null
+        this.outcomes = null
+
+        this.vars = {}
     }
 
-    getSection() {
-        let state = this.store.getState()
-        let bookId = state.book
-        let sectionId = state.section
+    setVar(name, value) {
+        this.vars[name] = value
+    }
 
-        let xml = books['book' + bookId][sectionId + '.xml']
-        if (!xml) {
-            throw `cannot find ${bookId}:${sectionId} `;
-        }
+    goToSection(book, section) {
+        const store = this.store
+        const state = store.getState()
 
-        let parser = new DOMParser();
-        let doc = parser.parseFromString(xml, 'text/xml');
-        console.log('section', doc)
-
-        let section = doc.documentElement
-
-        return section
+        store.dispatch({
+            type: GO_TO_SECTION,
+            book: parseInt(book || state.book),
+            section: parseInt(section || 1),
+        })
     }
 }

@@ -1,10 +1,4 @@
-const GO_TO_SECTION = 'GO_TO_SECTION';
-export const goToSection = function (section) {
-    return {
-        type: GO_TO_SECTION,
-        section,
-    };
-}
+export const GO_TO_SECTION = 'GO_TO_SECTION';
 
 const LOSE_SHARDS = 'LOSE_SHARDS';
 export const loseShards = function (shards) {
@@ -38,16 +32,68 @@ export const gainCodeword = function (codeword) {
     };
 }
 
+const ADD_TICK = 'ADD_TICK';
+export function addTick() {
+    return {
+        type: ADD_TICK,
+    }
+}
+
+const ADD_POISON = 'ADD_POISON'
+export function addPoison(name, effects) {
+    return {
+        type: ADD_POISON,
+        name,
+        effects,
+    }
+}
+
+const ADD_ITEM = 'ADD_ITEM'
+export function addItem(name) {
+    return {
+        type: ADD_ITEM,
+        name,
+    }
+}
+
 export const reducer = (state = initialData, action) => {
-    console.log(action.type);
+    console.log(action);
 
     switch (action.type) {
         case GO_TO_SECTION:
             return {
                 ...state,
-                lastRoll: null,
+                book: action.book,
                 section: action.section,
             };
+
+        case ADD_ITEM:
+            let items = state.items
+            return {
+                ...state,
+                items: [
+                    ...items,
+                    {name: action.name},
+                ],
+            }
+
+        case ADD_TICK:
+            let ticks = state.ticks
+            let book = state.book
+            let section = state.section
+            let bookTicks = ticks[book] || {}
+            let sectionTicks = bookTicks[section] || 0
+
+            return {
+                ...state,
+                ticks: {
+                    ...ticks,
+                    [book]: {
+                        ...bookTicks,
+                        [section]: sectionTicks + 1
+                    }
+                }
+            }
 
         case GAIN_CODEWORD:
             return {
@@ -71,6 +117,18 @@ export const reducer = (state = initialData, action) => {
             return {
                 ...state,
                 stamina: Math.max(state.stamina - action.stamina, 0),
+            }
+
+        case ADD_POISON:
+            return {
+                ...state,
+                poisons: [
+                    ...state.poisons,
+                    {
+                        name: action.name,
+                        effects: action.effects,
+                    },
+                ],
             }
 
         default:

@@ -1,26 +1,24 @@
-import {connect} from 'react-redux';
 import React from 'react';
-
-import {goToSection} from '../actions';
 
 class GoTo extends React.Component {
     componentDidMount() {
-        const {group, onClick} = this.props
+        const {group} = this.props
 
         if (group) {
-            group.register(onClick)
+            group.register(this)
         }
     }
 
-    render() {
-        const {children, group, onClick, section} = this.props
+    execute() {
+        const {book, game, section} = this.props
+        game.goToSection(book, section)
+    }
 
-        if (group) {
-            return null;
-        }
+    render() {
+        const {children, section} = this.props
 
         return (
-            <a href="javascript:void(0)" onClick={onClick}>
+            <a href="javascript:void(0)" onClick={this.execute.bind(this)}>
                 {this._renderPrompt()}
             </a>
         )
@@ -33,14 +31,8 @@ class GoTo extends React.Component {
             return children
         }
 
-        return `go to section #${section}`
+        return `Turn to #${section}`
     }
 }
 
-const mapDispatchToProps = (dispatch, {section}) => {
-    return {
-        onClick: () => dispatch(goToSection(section)),
-    };
-}
-
-export default connect(null, mapDispatchToProps)(GoTo);
+export default GoTo;

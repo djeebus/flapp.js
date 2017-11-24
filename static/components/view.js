@@ -5,6 +5,7 @@ import Armour from '../nodes/armour';
 import Choice from '../nodes/choice';
 import Choices from '../nodes/choices';
 import Difficulty from '../nodes/difficulty';
+import Effect from '../nodes/effect'
 import Else from '../nodes/else';
 import ElseIf from '../nodes/elseif';
 import Failure from '../nodes/failure';
@@ -16,7 +17,10 @@ import If from '../nodes/if';
 import Item from '../nodes/item';
 import Lose from '../nodes/lose';
 import Market from '../nodes/market';
+import Outcome from '../nodes/outcome'
 import Outcomes from '../nodes/outcomes';
+import Poison from '../nodes/poison'
+import Random from '../nodes/random';
 import Rest from '../nodes/rest';
 import Set from '../nodes/set';
 import Success from '../nodes/success';
@@ -34,7 +38,14 @@ const
 
 
 const boolAttr = (attrs, name) => attrs.getNamedItem(name).value == 't';
-const intAttr = (attrs, name) => parseInt(attrs.getNamedItem(name).value);
+const intAttr = (attrs, name) => {
+    let item = attrs.getNamedItem(name)
+    if (item == null) {
+        return null;
+    }
+
+    return parseInt(item.value);
+}
 const textAttr = (attrs, name) => attrs.getNamedItem(name).value;
 
 class View extends React.Component {
@@ -56,7 +67,7 @@ class View extends React.Component {
             case TEXT_NODE:
                 let text = node.wholeText.trim()
                 if (text) {
-                    return node.wholeText
+                    return <Text key={index}>{node.wholeText}</Text>
                 }
         }
     }
@@ -82,6 +93,7 @@ class View extends React.Component {
             'choice': Choice,
             'choices': Choices,
             'difficulty': Difficulty,
+            'effect': Effect,
             'else': Else,
             'elseif': ElseIf,
             'failure': Failure,
@@ -93,7 +105,10 @@ class View extends React.Component {
             'item': Item,
             'lose': Lose,
             'market': Market,
+            'outcome': Outcome,
             'outcomes': Outcomes,
+            'poison': Poison,
+            'random': Random,
             'rest': Rest,
             'set': Set,
             'success': Success,
@@ -119,26 +134,55 @@ class View extends React.Component {
         return <Unknown tag={node.localName} {...props}>{children}</Unknown>
     }
 
+    boxes(count) {
+        if (!count) {
+            return
+        }
+
+        let ticks = this.props.ticks
+        let boxes = []
+        for (let x = 0; x < count; x++) {
+            let attrs = {
+                key: x,
+                type: 'checkbox',
+                disabled: 'disabled',
+            }
+            if (x < ticks) {
+                attrs.checked = 'checked'
+            }
+
+            boxes.push(<input {...attrs} />)
+        }
+        return boxes;
+    }
+
     render() {
         let section = this.props.game.getSection()
         let attrs = section.attributes;
         let name = textAttr(attrs, 'name')
+        let boxes = intAttr(attrs, 'boxes')
 
         return (
             <div>
                 <h1>#{name || "unknown"}</h1>
+                {this.boxes(boxes)}
                 {[...this.parseNodes(section.childNodes)]}
             </div>
         );
     }
 }
 
+function mapStateToProps(state) {
+    const bookTicks = state.ticks[state.book] || {}
+
+    return {
+        book: state.book,
+        section: state.section,
+        ticks: bookTicks[state.section] || 0
+    };
+}
+
 export default connect(
-    (state, ownProps) => {
-        return {
-            book: state.book,
-            section: state.section,
-        };
-    },
+    mapStateToProps,
     (dispatch, ownProps) => { return {}; },
 )(View);

@@ -1,14 +1,17 @@
 import React from 'react';
 import {connect} from 'react-redux';
 
-import {goToSection} from '../actions';
-
 class Failure extends React.Component {
     constructor(props) {
         super(props)
 
         let game = props.game
-        game.registerFailure(props.onFailure)
+        game.registerFailure(this)
+    }
+
+    execute() {
+        const {game, section} = this.props
+        game.goToSection(null, section)
     }
 
     render() {
@@ -16,10 +19,4 @@ class Failure extends React.Component {
     }
 }
 
-const mapDispatchToProps = (dispatch, {section}) => {
-    return {
-        onFailure: () => dispatch(goToSection(section))
-    }
-}
-
-export default connect(null, mapDispatchToProps)(Failure);
+export default Failure;
