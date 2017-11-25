@@ -1,35 +1,36 @@
-import React from 'react';
-import {connect} from 'react-redux';
+import React from 'react'
+import {connect} from 'react-redux'
 
-import Armour from '../nodes/armour';
-import Choice from '../nodes/choice';
-import Choices from '../nodes/choices';
-import Difficulty from '../nodes/difficulty';
+import Armour from '../nodes/armour'
+import Choice from '../nodes/choice'
+import Choices from '../nodes/choices'
+import Difficulty from '../nodes/difficulty'
 import Effect from '../nodes/effect'
-import Else from '../nodes/else';
-import ElseIf from '../nodes/elseif';
-import Failure from '../nodes/failure';
-import Gain from '../nodes/gain';
-import GoTo from '../nodes/goto';
-import Group from '../nodes/group';
-import Header from '../nodes/header';
-import If from '../nodes/if';
-import Item from '../nodes/item';
-import Lose from '../nodes/lose';
-import Market from '../nodes/market';
+import Else from '../nodes/else'
+import ElseIf from '../nodes/elseif'
+import Failure from '../nodes/failure'
+import Gain from '../nodes/gain'
+import GoTo from '../nodes/goto'
+import Group from '../nodes/group'
+import Header from '../nodes/header'
+import If from '../nodes/if'
+import Item from '../nodes/item'
+import Lose from '../nodes/lose'
+import Market from '../nodes/market'
 import Outcome from '../nodes/outcome'
-import Outcomes from '../nodes/outcomes';
+import Outcomes from '../nodes/outcomes'
 import Poison from '../nodes/poison'
-import Random from '../nodes/random';
-import Rest from '../nodes/rest';
-import Set from '../nodes/set';
-import Success from '../nodes/success';
-import Text from '../nodes/text';
-import Tick from '../nodes/tick';
-import Tool from '../nodes/tool';
-import Trade from '../nodes/trade';
-import Unknown from '../nodes/unknown';
-import Weapon from '../nodes/weapon';
+import Random from '../nodes/random'
+import RankCheck from '../nodes/rankcheck'
+import Rest from '../nodes/rest'
+import Set from '../nodes/set'
+import Success from '../nodes/success'
+import Text from '../nodes/text'
+import Tick from '../nodes/tick'
+import Tool from '../nodes/tool'
+import Trade from '../nodes/trade'
+import Unknown from '../nodes/unknown'
+import Weapon from '../nodes/weapon'
 
 const
     ELEMENT_NODE = 1,
@@ -77,6 +78,7 @@ class View extends React.Component {
 
         let props = {
             game: this.props.game,
+            index: index,
             key: index,
         };
 
@@ -109,6 +111,7 @@ class View extends React.Component {
             'outcomes': Outcomes,
             'poison': Poison,
             'random': Random,
+            'rankcheck': RankCheck,
             'rest': Rest,
             'set': Set,
             'success': Success,
@@ -169,6 +172,10 @@ class View extends React.Component {
                 {[...this.parseNodes(section.childNodes)]}
             </div>
         );
+    }
+
+    componentDidMount() {
+        scroll(0, 0)
     }
 }
 

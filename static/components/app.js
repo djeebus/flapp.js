@@ -1,16 +1,17 @@
 import React from 'react';
 import {Provider} from 'react-redux';
 
-import Player from './player';
-import View from './view';
+import {Game} from './game'
 
 export function App({store, game}) {
+    const {player} = store.getState()
+
     return (
         <Provider store={store}>
             <div id="app">
                 <h3>Fabled Lands</h3>
-                <View game={game} />
-                <Player />
+
+                <Game game={game} />
             </div>
         </Provider>
     )

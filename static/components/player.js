@@ -40,9 +40,7 @@ class Player extends React.Component {
                 <div>{stamina}</div>
 
                 <h3>Items</h3>
-                <ul>
-                    {items.map(this._renderItem.bind(this))}
-                </ul>
+                <ul>{items.map(this._renderItem.bind(this))}</ul>
 
                 <h3>Poison</h3>
                 <div>{poisons.map(this._renderPoison.bind(this))}</div>

@@ -1,21 +1,12 @@
-import React from 'react';
-import {connect} from 'react-redux';
+import React from 'react'
+import Result from './result'
 
-class Failure extends React.Component {
+class Failure extends Result {
     constructor(props) {
         super(props)
 
         let game = props.game
         game.registerFailure(this)
-    }
-
-    execute() {
-        const {game, section} = this.props
-        game.goToSection(null, section)
-    }
-
-    render() {
-        return null
     }
 }
 

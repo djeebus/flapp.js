@@ -5,13 +5,13 @@ import {goToSection} from '../actions';
 
 class Choice extends React.Component {
     execute() {
-        const {game} = this.props
+        const {game, section} = this.props
 
         game.goToSection(null, section)
     }
 
     render() {
-        const {children, onClick, section} = this.props
+        const {children} = this.props
 
         return (
             <li>

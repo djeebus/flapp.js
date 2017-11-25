@@ -3,30 +3,36 @@ import React from 'react';
 
 
 const canExecute = ({
-    safeAddGod, shards, playerShards, codeword, playerCodewords, profession,
-    playerProfession, title, playerTitles, ticks, sectionTicks,
+    player, safeAddGod, shards, codeword, profession, title, ticks, item,
 }) => {
     if (shards) {
         shards = parseInt(shards);
-        if (shards > playerShards) {
+        if (shards > player.shards) {
             return false;
         }
     }
 
     if (codeword) {
-        if (playerCodewords[codeword] !== true) {
+        if (player.codewords[codeword] !== true) {
+            return false;
+        }
+    }
+
+    if (item) {
+        const hasItem = player.items.find(i => i.name == item)
+        if (!hasItem) {
             return false;
         }
     }
 
     if (profession) {
-        if (playerProfession !== profession) {
+        if (player.profession !== profession) {
             return false;
         }
     }
 
     if (title) {
-        if (playerTitles[title] !== true) {
+        if (player.titles[title] !== true) {
             return false;
         }
     }
@@ -58,10 +64,13 @@ const If = function (props) {
 
 const mapStateToProps = (state, {game}) => {
     return {
-        playerCodewords: state.codewords,
-        playerProfession: state.profession,
-        playerShards: state.shards,
-        playerTitles: state.titles,
+        player: {
+            codewords: state.codewords,
+            items: state.items,
+            profession: state.profession,
+            shards: state.shards,
+            titles: state.titles,
+        },
         sectionTicks: game.getTicks(),
     };
 }

@@ -1,7 +1,7 @@
 import {connect} from 'react-redux';
 import React from 'react';
 
-import {loseShards, loseStamina} from '../actions';
+import {loseShards, loseStamina, setStaminaTo} from '../actions';
 
 class Lose extends React.Component {
     componentDidMount() {
@@ -27,12 +27,13 @@ class Lose extends React.Component {
     }
 }
 
-const mapDispatchToProps = function (dispatch, {shards, stamina}) {
+const mapDispatchToProps = function (dispatch, {shards, stamina, staminato}) {
     const execute = () => {
         console.log('losing stuff')
 
         shards && dispatch(loseShards(shards))
         stamina && dispatch(loseStamina(stamina))
+        staminato && dispatch(setStaminaTo(staminato))
     }
 
     return {

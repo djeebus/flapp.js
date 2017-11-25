@@ -25,13 +25,14 @@ class GoTo extends React.Component {
     }
 
     _renderPrompt() {
-        const {children, section} = this.props
+        const {children, index, section} = this.props
 
-        if (children.length) {
-            return children
+        if (children && children.length) {
+            return <span>children</span>
         }
 
-        return `Turn to #${section}`
+        const prompt = index == 0 ? "Turn" : "turn"
+        return `${prompt} to #${section}`
     }
 }
 

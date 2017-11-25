@@ -24,6 +24,14 @@ export function loseStamina(stamina) {
     }
 }
 
+const SET_STAMINA_TO = 'SET_STAMINA_TO'
+export function setStaminaTo(stamina) {
+    return {
+        type: SET_STAMINA_TO,
+        stamina,
+    }
+}
+
 const GAIN_CODEWORD = 'GAIN_CODEWORD';
 export const gainCodeword = function (codeword) {
     return {
@@ -111,6 +119,12 @@ export const reducer = (state = initialData, action) => {
                     state.stamina + action.stamina,
                     state.maxStamina,
                 )
+            }
+
+        case SET_STAMINA_TO:
+            return {
+                ...state,
+                stamina: parseInt(action.stamina),
             }
 
         case LOSE_STAMINA:
