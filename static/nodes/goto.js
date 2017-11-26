@@ -15,7 +15,7 @@ class GoTo extends React.Component {
     }
 
     render() {
-        const {children, section} = this.props
+        const {section} = this.props
 
         return (
             <a href="javascript:void(0)" onClick={this.execute.bind(this)}>
@@ -28,7 +28,7 @@ class GoTo extends React.Component {
         const {children, index, section} = this.props
 
         if (children && children.length) {
-            return <span>children</span>
+            return <span>{children}</span>
         }
 
         const prompt = index == 0 ? "Turn" : "turn"

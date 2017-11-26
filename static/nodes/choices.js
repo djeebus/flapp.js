@@ -1,10 +1,10 @@
 import {connect} from 'react-redux';
 import React from 'react';
 
-export default (props, state) => {
+export default ({children}) => {
     return (
         <ul>
-            {props.children}
+            {children}
         </ul>
     )
 }

@@ -25,6 +25,12 @@ class Outcome extends React.Component {
             return false;
         }
 
+        const {game, section} = this.props
+        if (section) {
+            game.goToSection(null, section)
+            return
+        }
+
         for (let index in this.activeChildren) {
             let active = this.activeChildren[index]
             active.execute()
@@ -39,11 +45,11 @@ class Outcome extends React.Component {
             return
         }
 
-        if (range.indexOf(",")) {
+        if (range.indexOf(",") != -1) {
             return range.split(',')
         }
 
-        if (range.indexOf("-")) {
+        if (range.indexOf("-") != -1) {
             return range.split('-')
         }
 

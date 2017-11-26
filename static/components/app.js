@@ -4,8 +4,6 @@ import {Provider} from 'react-redux';
 import {Game} from './game'
 
 export function App({store, game}) {
-    const {player} = store.getState()
-
     return (
         <Provider store={store}>
             <div id="app">

@@ -1,8 +1,21 @@
 import React from 'react';
 import {connect} from 'react-redux';
 
-const ElseIf = ({children}) => {
-    return <span>{children}</span>
+import If from './if'
+
+class ElseIf extends If {
+    canExecute() {
+        let node = this
+        do {
+            const {executed} = this.state
+            if (executed) {
+                return false
+            }
+            node = this.props.parent
+        } while (node)
+
+        return super.canExecute()
+    }
 }
 
-export default connect()(ElseIf);
+export default ElseIf;

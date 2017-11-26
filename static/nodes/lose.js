@@ -1,15 +1,21 @@
 import {connect} from 'react-redux';
 import React from 'react';
 
-import {loseShards, loseStamina, setStaminaTo} from '../actions';
+import {loseCodeword, loseShards, loseStamina, setStaminaTo} from '../actions';
 
 class Lose extends React.Component {
-    componentDidMount() {
-        const {group} = this.props
+    constructor(props) {
+        super(props)
+
+        const {group} = props
 
         if (group) {
-            group.register(this.props.onClick)
+            group.register(this)
         }
+    }
+
+    execute() {
+        this.props.execute()
     }
 
     render() {
@@ -27,10 +33,11 @@ class Lose extends React.Component {
     }
 }
 
-const mapDispatchToProps = function (dispatch, {shards, stamina, staminato}) {
+const mapDispatchToProps = function (dispatch, {codeword, shards, stamina, staminato}) {
     const execute = () => {
         console.log('losing stuff')
 
+        codeword && dispatch(loseCodeword(codeword))
         shards && dispatch(loseShards(shards))
         stamina && dispatch(loseStamina(stamina))
         staminato && dispatch(setStaminaTo(staminato))

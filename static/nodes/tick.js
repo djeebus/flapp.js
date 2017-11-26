@@ -37,12 +37,6 @@ class Tick extends React.Component {
     }
 }
 
-const mapStateToProps = (state, {game}) => {
-    return {
-        ticks: game.getTicks(),
-    }
-}
-
 const mapDispatchToProps = (dispatch, {codeword, game, god}) => {
     const execute = () => {
         const boxes = game.getBoxes()

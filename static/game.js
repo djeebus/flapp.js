@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import books from 'json-loader!../books.json';
-import {GO_TO_SECTION, gainStamina, loseShards, addTick } from './actions';
+import {GO_TO_SECTION, gainStamina, loseShards, addTick} from './actions';
 
 function getDoc(bookId, file) {
     const book = 'book' + bookId
@@ -24,36 +24,108 @@ export class Game {
     getAdventurers() {
         const doc = getDoc(1, 'Adventurers.xml').documentElement
 
-        const players = {}
+        const professions = {}
+        const common = {
+            'inventory': [],
+        }
 
         for (let x = 0; x < doc.children.length; x++) {
             const node = doc.children[x]
-            if (node.localName == 'abilities') {
-                const statNames = node.children[0].textContent
-                    .split(' ')
-                    .map(s => s.toLowerCase())
-                const professions = [...node.children].slice(1)
-                professions.forEach(p => {
-                    const attribs = p.attributes
-                    const profession = attribs.getNamedItem('name').value
-                    players[profession] = {
-                        'abilities': {},
-                        'profession': profession,
+            const attrs = node.attributes
+
+            function getAmountAttr() {
+                return parseInt(attrs.getNamedItem('amount').value)
+            }
+
+            switch (node.localName) {
+                case 'abilities':
+                    const statNames = node.children[0].textContent
+                        .split(' ')
+                        .map(s => s.toLowerCase())
+                    const profNodes = [...node.children].slice(1)
+                    profNodes.forEach(p => {
+                        const attribs = p.attributes
+                        const profession = attribs.getNamedItem('name').value
+                        professions[profession] = {
+                            'abilities': {},
+                            'inventory': [],
+                            'profession': profession,
+                        }
+                        const abilities = professions[profession]['abilities']
+                        const stats = p.textContent.split(' ').map(s => parseInt(s))
+                        for (let y = 0; y < stats.length; y++) {
+                            abilities[statNames[y]] = stats[y]
+                        }
+                    })
+                    break
+
+                case 'stamina':
+                    common.stamina = getAmountAttr()
+                    break
+
+                case 'rank':
+                    common.rank = getAmountAttr()
+                    break
+
+                case 'gold':
+                    common.gold = getAmountAttr()
+                    break
+
+                case 'items':
+                    for (let y = 0; y < node.children.length; y++) {
+                        let item = node.children[y]
+                        const [profession, parsed] = this._parseItem(item)
+                        if (profession) {
+                            professions[profession].inventory.push(parsed)
+                        } else {
+                            common.inventory.push(parsed)
+                        }
                     }
-                    const abilities = players[profession]['abilities']
-                    const stats = p.textContent.split(' ').map(s => parseInt(s))
-                    for (let y = 0; y < stats.length; y++) {
-                        abilities[statNames[y]] = stats[y]
-                    }
-                })
+                    break
             }
         }
 
-        return _.sortBy(Object.values(players), p => p.name)
+        const profs = _.sortBy(Object.values(professions), p => p.name)
+        const full = profs.map(p => {
+            return {
+                ...p,
+                stamina: common.stamina,
+                rank: common.rank,
+                shards: common.gold,
+                inventory: [
+                    ...p.inventory,
+                    ...common.inventory,
+                ],
+            }
+        })
+
+        return full
+    }
+
+    _parseItem(node) {
+        const getAttr = name => {
+            const attr = node.attributes.getNamedItem(name)
+            if (attr) {
+                return attr.value
+            }
+        }
+        const profession = getAttr('profession')
+        const parsed = {
+            'type': node.localName,
+            'name': getAttr('name'),
+        }
+
+        const bonus = getAttr('bonus')
+        if (bonus) {
+            parsed['bonus'] = parseInt(bonus)
+        }
+
+        return [profession, parsed]
     }
 
     getSection() {
-        const {book, section} = this.store.getState()
+        const {player} = this.store.getState()
+        const {book, section} = player
         const doc = getDoc(book, section + '.xml')
 
         return doc.documentElement
@@ -73,17 +145,17 @@ export class Game {
 
     getRank() {
         const state = this.store.getState()
-        return state.rank
+        return state.player.rank
     }
 
     getTicks() {
-        let state = this.store.getState()
+        const {player} = this.store.getState()
 
-        let bookId = parseInt(state.book)
-        let sectionId = parseInt(state.section)
+        const book = parseInt(player.book)
+        const section = parseInt(player.section)
 
-        let bookTicks = state.ticks[bookId] || {}
-        return bookTicks[sectionId] || 0
+        const bookTicks = player.ticks[book] || {}
+        return bookTicks[section] || 0
     }
 
     registerFailure(onFailure) {
@@ -111,8 +183,8 @@ export class Game {
     }
 
     performAbilityRoll(ability, level) {
-        let state = this.store.getState()
-        let currentLevel = state.abilities[ability];
+        let {player} = this.store.getState()
+        let currentLevel = player.abilities[ability];
 
         let result = this.roll(2)
         console.log(`${result} > ${level}`)
@@ -145,10 +217,10 @@ export class Game {
         stamina = parseInt(stamina)
 
         let store = this.store
-        let state = store.getState()
-        let playerShards = state.shards
-        let playerStamina = state.stamina
-        let playerMaxStamina = state.maxStamina
+        let {player} = store.getState()
+        let playerShards = player.shards
+        let playerStamina = player.stamina
+        let playerMaxStamina = player.maxStamina
 
         if (playerShards < shards) {
             return false;
@@ -183,17 +255,24 @@ export class Game {
         this.vars = {}
     }
 
+    getVar(name) {
+        const value = this.vars[name]
+        console.log(name, ' == ', value)
+        return value
+    }
+
     setVar(name, value) {
+        console.log('setting', name, 'to', value)
         this.vars[name] = value
     }
 
     goToSection(book, section) {
         const store = this.store
-        const state = store.getState()
+        const {player} = store.getState()
 
         store.dispatch({
             type: GO_TO_SECTION,
-            book: parseInt(book || state.book),
+            book: parseInt(book || player.book),
             section: parseInt(section || 1),
         })
     }

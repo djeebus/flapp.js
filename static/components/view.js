@@ -51,19 +51,22 @@ const textAttr = (attrs, name) => attrs.getNamedItem(name).value;
 
 class View extends React.Component {
     *parseNodes(nodes) {
+        let prev
+
         for (let x = 0; x < nodes.length; x++) {
             let node = nodes[x];
-            node = this.parseNode(node, x);
+            node = this.parseNode(node, x, prev);
             if (node) {
+                prev = node
                 yield node
             }
         }
     }
 
-    parseNode(node, index) {
+    parseNode(node, index, prev) {
         switch (node.nodeType) {
             case ELEMENT_NODE:
-                return this.parseElementNode(node, index);
+                return this.parseElementNode(node, index, prev);
 
             case TEXT_NODE:
                 let text = node.wholeText.trim()
@@ -73,13 +76,14 @@ class View extends React.Component {
         }
     }
 
-    parseElementNode(node, index) {
+    parseElementNode(node, index, prev) {
         let attrs = node.attributes;
 
         let props = {
             game: this.props.game,
             index: index,
             key: index,
+            previous: prev,
         };
 
         for (var x = 0; x < attrs.length; x++) {
@@ -179,17 +183,15 @@ class View extends React.Component {
     }
 }
 
-function mapStateToProps(state) {
-    const bookTicks = state.ticks[state.book] || {}
+function mapStateToProps({player}) {
+    const {book, section, ticks} = player
+    const bookTicks = ticks[book] || {}
 
     return {
-        book: state.book,
-        section: state.section,
-        ticks: bookTicks[state.section] || 0
+        book,
+        section,
+        ticks: bookTicks[section] || 0
     };
 }
 
-export default connect(
-    mapStateToProps,
-    (dispatch, ownProps) => { return {}; },
-)(View);
+export default connect(mapStateToProps)(View);

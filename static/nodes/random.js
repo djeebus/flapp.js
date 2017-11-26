@@ -2,12 +2,12 @@ import React from 'react';
 
 export default class Random extends React.Component {
     onClick() {
-        const {game, dice} = this.props
+        const {game, dice=1} = this.props
         game.performRandomRoll(dice)
     }
 
     render() {
-        let {children, dice} = this.props
+        let {children, dice=1} = this.props
 
         if (!children || children.length == 0) {
             children = `Roll ${dice} dice`

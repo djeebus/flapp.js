@@ -36,10 +36,17 @@ const GAIN_CODEWORD = 'GAIN_CODEWORD';
 export const gainCodeword = function (codeword) {
     return {
         type: GAIN_CODEWORD,
-        codeword: codeword,
+        codeword,
     };
 }
 
+const LOSE_CODEWORD = 'LOSE_CODEWORD';
+export function loseCodeword(codeword) {
+    return {
+        type: LOSE_CODEWORD,
+        codeword,
+    }
+}
 const ADD_TICK = 'ADD_TICK';
 export function addTick() {
     return {
@@ -64,41 +71,72 @@ export function addItem(name) {
     }
 }
 
-export const reducer = (state = initialData, action) => {
+const NEW_GAME = 'NEW_GAME'
+export function newGame(player) {
+    return {
+        type: NEW_GAME,
+        player,
+    }
+}
+
+export const reducer = (state = {}, action) => {
     console.log(action);
 
     switch (action.type) {
+        case NEW_GAME:
+            return {
+                ...state,
+                player: {
+                    ...action.player,
+                    book: 1,
+                    codewords: {},
+                    maxStamina: action.player.stamina,
+                    poisons: [],
+                    section: 1,
+                    ticks: {},
+                    titles: {},
+                },
+            }
+
         case GO_TO_SECTION:
             return {
                 ...state,
-                book: action.book,
-                section: action.section,
+                player: {
+                    ...state.player,
+                    book: action.book,
+                    section: action.section,
+                }
             };
 
         case ADD_ITEM:
-            let items = state.items
             return {
                 ...state,
-                items: [
-                    ...items,
-                    {name: action.name},
-                ],
+                player: {
+                    ...state.player,
+                    inventory: [
+                        ...state.player.inventory,
+                        action.item,
+                    ],
+                },
             }
 
         case ADD_TICK:
-            let ticks = state.ticks
-            let book = state.book
-            let section = state.section
+            let ticks = state.player.ticks
+            let book = state.player.book
+            let section = state.player.section
             let bookTicks = ticks[book] || {}
             let sectionTicks = bookTicks[section] || 0
 
             return {
                 ...state,
-                ticks: {
-                    ...ticks,
-                    [book]: {
-                        ...bookTicks,
-                        [section]: sectionTicks + 1
+                player: {
+                    ...state.player,
+                    ticks: {
+                        ...ticks,
+                        [book]: {
+                            ...bookTicks,
+                            [section]: sectionTicks + 1
+                        }
                     }
                 }
             }
@@ -106,43 +144,70 @@ export const reducer = (state = initialData, action) => {
         case GAIN_CODEWORD:
             return {
                 ...state,
-                codewords: {
-                    ...state.codewords,
-                    [action.codeword]: true,
+                player: {
+                    ...state.player,
+                    codewords: {
+                        ...state.player.codewords,
+                        [action.codeword]: true,
+                    },
                 },
             };
+
+        case LOSE_CODEWORD:
+            return {
+                ...state,
+                player: {
+                    ...state.player,
+                    codewords: {
+                        ...state.player.codewords,
+                        [action.codeword]: false,
+                    },
+                },
+            }
 
         case GAIN_STAMINA:
             return {
                 ...state,
-                stamina: Math.max(
-                    state.stamina + action.stamina,
-                    state.maxStamina,
-                )
+                player: {
+                    ...state.player,
+                    stamina: Math.max(
+                        state.stamina + action.stamina,
+                        state.maxStamina,
+                    )
+                }
             }
 
         case SET_STAMINA_TO:
             return {
                 ...state,
-                stamina: parseInt(action.stamina),
+                player: {
+                    ...state.player,
+                    stamina: parseInt(action.stamina),
+                }
             }
 
         case LOSE_STAMINA:
             return {
                 ...state,
-                stamina: Math.max(state.stamina - action.stamina, 0),
+                player: {
+                    ...state.player,
+                    stamina: Math.max(state.stamina - action.stamina, 0),
+                },
             }
 
         case ADD_POISON:
             return {
                 ...state,
-                poisons: [
-                    ...state.poisons,
-                    {
-                        name: action.name,
-                        effects: action.effects,
-                    },
-                ],
+                player: {
+                    ...state.player,
+                    poisons: [
+                        ...state.poisons,
+                        {
+                            name: action.name,
+                            effects: action.effects,
+                        },
+                    ],
+                },
             }
 
         default:
