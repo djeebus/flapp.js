@@ -4,10 +4,13 @@ import {connect} from 'react-redux';
 import {gainCodeword, addTick} from '../actions';
 
 class Tick extends React.Component {
-    componentDidMount() {
-        const {group} = this.props
-        if (!group) {
-            this.props.execute()
+    constructor(props) {
+        super(props)
+
+        const {group} = props
+
+        if (group) {
+            group.register(this)
         }
     }
 
@@ -35,16 +38,27 @@ class Tick extends React.Component {
             )
         }
     }
+
+    componentWillMount() {
+        const {group} = this.props
+        if (!group) {
+            this.execute()
+        }
+    }
 }
 
 const mapDispatchToProps = (dispatch, {codeword, game, god}) => {
     const execute = () => {
-        const boxes = game.getBoxes()
-        const ticks = game.getTicks()
-        boxes && boxes > ticks && dispatch(addTick())
-
-        codeword && dispatch(gainCodeword(codeword));
-        god && dispatch(tickGod(god));
+        console.log('tick')
+        if (codeword) {
+            dispatch(gainCodeword(codeword));
+        } else if (god) {
+            dispatch(tickGod(god))
+        } else {
+            const boxes = game.getBoxes()
+            const ticks = game.getTicks()
+            boxes && boxes > ticks && dispatch(addTick())
+        }
     }
 
     return {

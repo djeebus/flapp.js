@@ -168,6 +168,8 @@ class View extends React.Component {
     }
 
     render() {
+        scrollTo(0, 0)
+
         let section = this.props.game.getSection()
         let attrs = section.attributes;
         let name = textAttr(attrs, 'name')
