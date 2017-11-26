@@ -7,6 +7,8 @@ class Failure extends Result {
 
         let game = props.game
         game.registerFailure(this)
+
+        this.prompt = "Failure"
     }
 }
 

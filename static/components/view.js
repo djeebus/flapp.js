@@ -9,6 +9,7 @@ import Effect from '../nodes/effect'
 import Else from '../nodes/else'
 import ElseIf from '../nodes/elseif'
 import Failure from '../nodes/failure'
+import Fight from '../nodes/fight'
 import Gain from '../nodes/gain'
 import GoTo from '../nodes/goto'
 import Group from '../nodes/group'
@@ -23,6 +24,7 @@ import Poison from '../nodes/poison'
 import Random from '../nodes/random'
 import RankCheck from '../nodes/rankcheck'
 import Rest from '../nodes/rest'
+import Resurrection from '../nodes/resurrection'
 import Set from '../nodes/set'
 import Success from '../nodes/success'
 import Text from '../nodes/text'
@@ -103,6 +105,7 @@ class View extends React.Component {
             'else': Else,
             'elseif': ElseIf,
             'failure': Failure,
+            'fight': Fight,
             'gain': Gain,
             'goto': GoTo,
             'group': Group,
@@ -117,6 +120,7 @@ class View extends React.Component {
             'random': Random,
             'rankcheck': RankCheck,
             'rest': Rest,
+            'resurrection': Resurrection,
             'set': Set,
             'success': Success,
             'text': Text,

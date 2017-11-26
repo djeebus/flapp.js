@@ -1,7 +1,7 @@
 import React from 'react'
 import {connect} from 'react-redux'
 
-import {newGame} from '../actions'
+import {setPlayer} from '../actions'
 
 class _SelectPlayer extends React.Component {
     render() {
@@ -47,7 +47,7 @@ class _SelectPlayer extends React.Component {
 function mapDispatchToProps(dispatch, props) {
     return {
         onClick: function (adventurer) {
-            dispatch(newGame(adventurer))
+            dispatch(setPlayer(adventurer))
         }
     }
 }

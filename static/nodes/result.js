@@ -31,7 +31,7 @@ class Result extends React.Component {
         }
 
         if (section) {
-            return `Go to #${section}`
+            return `${this.prompt}: Go to #${section}`
         }
 
         return null

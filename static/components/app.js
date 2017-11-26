@@ -1,16 +1,25 @@
 import React from 'react';
-import {Provider} from 'react-redux';
+import { connect, Provider } from 'react-redux';
 
-import {Game} from './game'
+import { Game } from './game'
+import { newGame } from '../actions'
 
-export function App({store, game}) {
+function _App({store, game, onClick}) {
     return (
         <Provider store={store}>
             <div id="app">
-                <h3>Fabled Lands</h3>
+                <h3>Fabled Lands (<a href="javascript:void(0)" onClick={onClick}>New game</a>)</h3>
 
                 <Game game={game} />
             </div>
         </Provider>
     )
 }
+
+function mapDispatchToProps(dispatch) {
+    return {
+        onClick: () => dispatch(newGame()),
+    }
+}
+
+export const App = connect(null, mapDispatchToProps)(_App)

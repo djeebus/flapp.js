@@ -72,9 +72,16 @@ export function addItem(name) {
 }
 
 const NEW_GAME = 'NEW_GAME'
-export function newGame(player) {
+export function newGame() {
     return {
         type: NEW_GAME,
+    }
+}
+
+const SET_PLAYER = 'SET_PLAYER'
+export function setPlayer(player) {
+    return {
+        type: SET_PLAYER,
         player,
     }
 }
@@ -84,6 +91,12 @@ export const reducer = (state = {}, action) => {
 
     switch (action.type) {
         case NEW_GAME:
+            return {
+                ...state,
+                player: null,
+            }
+
+        case SET_PLAYER:
             return {
                 ...state,
                 player: {
@@ -191,7 +204,7 @@ export const reducer = (state = {}, action) => {
                 ...state,
                 player: {
                     ...state.player,
-                    stamina: Math.max(state.stamina - action.stamina, 0),
+                    stamina: Math.max(state.player.stamina - action.stamina, 0),
                 },
             }
 

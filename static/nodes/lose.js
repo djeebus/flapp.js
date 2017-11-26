@@ -38,9 +38,9 @@ const mapDispatchToProps = function (dispatch, {codeword, shards, stamina, stami
         console.log('losing stuff')
 
         codeword && dispatch(loseCodeword(codeword))
-        shards && dispatch(loseShards(shards))
-        stamina && dispatch(loseStamina(stamina))
-        staminato && dispatch(setStaminaTo(staminato))
+        shards && dispatch(loseShards(parseInt(shards)))
+        stamina && dispatch(loseStamina(parseInt(stamina)))
+        staminato && dispatch(setStaminaTo(parseInt(staminato)))
     }
 
     return {

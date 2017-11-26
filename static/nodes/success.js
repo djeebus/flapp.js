@@ -7,6 +7,8 @@ class Success extends Result {
 
         let game = props.game
         game.registerSuccess(this)
+
+        this.prompt = "Success"
     }
 }
 
