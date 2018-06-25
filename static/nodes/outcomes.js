@@ -3,29 +3,9 @@ import {connect} from 'react-redux'
 import {addProps} from '../util'
 
 class Outcomes extends React.Component {
-    constructor(props) {
-        super(props)
-
-        const {game} = props
-
-        this.outcomes = []
-        game.registerOutcomes(this)
-    }
-
-    registerOutcome(outcome) {
-        this.outcomes.push(outcome)
-    }
-
-    execute(result) {
-        for (let index in this.outcomes) {
-            let outcome = this.outcomes[index]
-            outcome.execute(result);
-        }
-    }
-
     render() {
-        const {children} = this.props
-        const childrenWithProps = addProps(children, {parent: this})
+        const {children, game} = this.props
+        const childrenWithProps = addProps(children, {game, parent: this})
 
         return (
             <ul>

@@ -1,5 +1,6 @@
 import React from 'react'
 import {connect} from 'react-redux'
+import PropTypes from 'prop-types'
 
 import Armour from '../nodes/armour'
 import Choice from '../nodes/choice'
@@ -79,6 +80,8 @@ class View extends React.Component {
     }
 
     parseElementNode(node, index, prev) {
+        console.log('parsing: ', node)
+
         let attrs = node.attributes;
 
         let props = {
@@ -187,6 +190,10 @@ class View extends React.Component {
     componentDidMount() {
         scroll(0, 0)
     }
+}
+
+View.propTypes = {
+    game: PropTypes.object.isRequired,
 }
 
 function mapStateToProps({player}) {

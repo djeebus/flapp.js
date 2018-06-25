@@ -4,16 +4,6 @@ import React from 'react';
 import {loseCodeword, loseShards, loseStamina, setStaminaTo} from '../actions';
 
 class Lose extends React.Component {
-    constructor(props) {
-        super(props)
-
-        const {group} = props
-
-        if (group) {
-            group.register(this)
-        }
-    }
-
     execute() {
         this.props.execute()
     }

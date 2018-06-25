@@ -85,17 +85,11 @@ class If extends React.Component {
     }
 
     render() {
-        const {children, hidden} = this.props
-        const {execute} = this.state
-        let attrs = {}
-        if (!execute) {
-            attrs['disabled'] = 'disabled'
-            attrs['style'] = {'textDecorationLine': 'line-through'}
-        }
+        const {children, game} = this.props
 
-        const childrenWithProps = addProps(children, {group: this})
+        const childrenWithProps = addProps(children, {game, group: this})
 
-        return <span {...attrs}>{childrenWithProps}</span>
+        return <span>{childrenWithProps}</span>
     }
 }
 

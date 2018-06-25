@@ -1,3 +1,4 @@
+import React from 'react'
 import _ from 'lodash'
 import books from 'json-loader!../books.json';
 import {GO_TO_SECTION, gainStamina, loseShards, addTick} from './actions';
@@ -158,30 +159,6 @@ export class Game {
         return bookTicks[section] || 0
     }
 
-    registerFailure(onFailure) {
-        console.log('storing onFailure')
-        this.onFailure = onFailure
-    }
-
-    registerSuccess(onSuccess) {
-        console.log('storing onSuccess')
-        this.onSuccess = onSuccess
-    }
-
-    registerOutcomes(outcomes) {
-        this.outcomes = outcomes
-    }
-
-    _success() {
-        console.log('onSuccess')
-        this.onSuccess && this.onSuccess.execute()
-    }
-
-    _failure() {
-        console.log('onFailure')
-        this.onFailure && this.onFailure.execute()
-    }
-
     performAbilityRoll(ability, level) {
         let {player} = this.store.getState()
         let currentLevel = player.abilities[ability];
@@ -190,15 +167,16 @@ export class Game {
         console.log(`${result} > ${level}`)
 
         if (result > level) {
-            this._success()
+            alert(`You rolled a ${result} and succeeded!`)
         } else {
-            this._failure()
+            alert(`You rolled a ${result} and failed.`)
         }
     }
 
     performRandomRoll(count) {
         const result = this.roll(count)
-        this.outcomes.execute(result)
+
+        alert(`You rolled a ${result}`)
     }
 
     performRankCheck(count, add) {

@@ -1,12 +1,8 @@
 import React from 'react';
 
 class GoTo extends React.Component {
-    componentDidMount() {
-        const {group} = this.props
-
-        if (group) {
-            group.register(this)
-        }
+    constructor(props, context) {
+        super(props, context);
     }
 
     execute() {

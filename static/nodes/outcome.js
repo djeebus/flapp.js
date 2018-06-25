@@ -3,8 +3,8 @@ import {connect} from 'react-redux'
 import {addProps} from '../util'
 
 class Outcome extends React.Component {
-    constructor(props) {
-        super(props)
+    constructor(props, context) {
+        super(props, context)
 
         this.state = {executed: null}
         this.activeChildren = []
@@ -56,12 +56,8 @@ class Outcome extends React.Component {
         return [range, range]
     }
 
-    register(child) {
-        this.activeChildren.push(child)
-    }
-
     render() {
-        const {children, range} = this.props
+        const {children, game, range} = this.props
         const {executed} = this.state
 
         let attrs = {}
@@ -71,7 +67,7 @@ class Outcome extends React.Component {
             attrs.style = {color: '#CCC'}
         }
 
-        const childrenWithProps = addProps(children, {group: this})
+        const childrenWithProps = addProps(children, {game, group: this})
 
         return <span {...attrs}>{range}: {childrenWithProps}</span>
     }

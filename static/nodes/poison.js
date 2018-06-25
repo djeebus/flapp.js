@@ -11,13 +11,6 @@ class Poison extends React.Component {
         this.effects = []
     }
 
-    componentDidMount() {
-        const {group} = this.props
-        if (group) {
-            group.register(this);
-        }
-    }
-
     execute() {
         this.props.execute(this.effects)
     }
@@ -27,8 +20,8 @@ class Poison extends React.Component {
     }
 
     render() {
-        const {children} = this.props
-        const childrenWithProps = addProps(children, {parent: this})
+        const {children, game} = this.props
+        const childrenWithProps = addProps(children, {game, parent: this})
         return <span>{childrenWithProps}</span>
     }
 }

@@ -5,9 +5,6 @@ class Success extends Result {
     constructor(props) {
         super(props)
 
-        let game = props.game
-        game.registerSuccess(this)
-
         this.prompt = "Success"
     }
 }

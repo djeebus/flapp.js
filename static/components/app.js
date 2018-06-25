@@ -9,7 +9,6 @@ function _App({store, game, onClick}) {
         <Provider store={store}>
             <div id="app">
                 <h3>Fabled Lands (<a href="javascript:void(0)" onClick={onClick}>New game</a>)</h3>
-
                 <Game game={game} />
             </div>
         </Provider>

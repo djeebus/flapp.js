@@ -21,8 +21,8 @@ class Group extends React.Component {
     }
 
     render() {
-        const {children} = this.props
-        const childrenWithProps = addProps(children, {group: this})
+        const {children, game} = this.props
+        const childrenWithProps = addProps(children, {game, group: this})
 
         return (
             <a href="javascript:void(0)" onClick={this.onClick.bind(this)}>

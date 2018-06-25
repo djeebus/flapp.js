@@ -4,13 +4,6 @@ import React from 'react';
 import {addItem} from '../actions'
 
 class Item extends React.Component {
-    constructor(props) {
-        super(props)
-
-        const {group} = this.props
-        group.register(this)
-    }
-
     execute() {
         this.props.execute()
     }

@@ -4,16 +4,6 @@ import {connect} from 'react-redux';
 import {gainCodeword, addTick} from '../actions';
 
 class Tick extends React.Component {
-    constructor(props) {
-        super(props)
-
-        const {group} = props
-
-        if (group) {
-            group.register(this)
-        }
-    }
-
     execute() {
         this.props.execute()
     }

@@ -11,8 +11,8 @@ class Market extends React.Component {
     register(child) {}
 
     render() {
-        const { children } = this.props
-        const childrenWithProps = addProps(children, {group: this})
+        const { children, game } = this.props
+        const childrenWithProps = addProps(children, {game, group: this})
 
         return (
             <table className="market">
