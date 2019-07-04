@@ -8,9 +8,6 @@ class Outcome extends React.Component {
 
         this.state = {executed: null}
         this.activeChildren = []
-
-        const {parent} = this.props
-        parent.registerOutcome(this)
     }
 
     execute(result) {

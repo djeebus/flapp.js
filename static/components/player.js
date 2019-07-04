@@ -26,7 +26,7 @@ class Player extends React.Component {
     }
 
     render() {
-        const {codewords, inventory, poisons, shards, stamina} = this.props
+        const {abilities, codewords, inventory, poisons, shards, stamina} = this.props
 
         return (
             <div>
@@ -44,13 +44,23 @@ class Player extends React.Component {
 
                 <h3>Poison</h3>
                 <div>{poisons.map(this._renderPoison.bind(this))}</div>
+
+                <h3>Abilities</h3>
+                <ul>
+                    <li>Charisma: {abilities.charisma}</li>
+                    <li>Combat: {abilities.combat}</li>
+                    <li>Magic: {abilities.magic}</li>
+                    <li>Sanctity: {abilities.sanctity}</li>
+                    <li>Scouting: {abilities.scouting}</li>
+                    <li>Thievery: {abilities.thievery}</li>
+                </ul>
             </div>
         )
     }
 }
 
 const mapStateToProps = ({player}) => {
-    const {codewords, inventory, poisons, shards, stamina} = player
+    const {abilities, codewords, inventory, poisons, shards, stamina} = player
     let cws = []
     for (let key in codewords) {
         let value = codewords[key]
@@ -67,6 +77,7 @@ const mapStateToProps = ({player}) => {
         poisons,
         shards,
         stamina,
+        abilities,
     }
 }
 

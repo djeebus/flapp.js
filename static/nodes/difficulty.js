@@ -1,29 +1,47 @@
 import React from 'react';
 import {connect} from 'react-redux';
+import {ParentContext} from '../contexts'
+import Adjustments from '../components/adjustments'
 
-import {performRoll} from '../actions';
+class Difficulty extends React.Component {
+    constructor(props) {
+        super(props)
 
-class _Difficulty extends React.Component {
+        this.adjustments = new Adjustments()
+        this.execute = this.execute.bind(this)
+    }
+
     render() {
-        const {ability, game, level} = this.props
+        const {ability, children, index, level} = this.props
+        const prefix = index == 0 ? "Perform" : "perform"
 
         return (
-            <a onClick={() => game.performAbilityRoll(ability, level)}
-               href="javascript:void(0)">
-                {this._renderPrompt()}
-            </a>
+            <ParentContext.Provider value={this}>
+                <a onClick={this.execute}
+                  href="javascript:void(0)"
+                >
+                    {prefix} a {ability} roll at level {level}
+                    {children}
+                </a>
+            </ParentContext.Provider>
         )
     }
 
-    _renderPrompt() {
-        const {ability, children, index, level} = this.props
-        if (children && children.length) {
-            return children
-        }
+    execute() {
+        const {ability, level, player} = this.props
+        var adjustment = this.adjustments.calculate(player)
+        this.props.game.performAbilityRoll(ability, level, adjustment)
+    }
 
-        const prefix = index == 0 ? "Perform" : "perform"
-        return <span>{prefix} a {ability} roll at level {level}</span>
+    addAdjust(adjust) {
+        this.adjustments.push(adjust)
     }
 }
 
-export default connect()(_Difficulty);
+function mapStateToProps(state) {
+    return {
+        player: state.player,
+    }
+}
+
+export default connect(mapStateToProps)(Difficulty);

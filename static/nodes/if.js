@@ -67,7 +67,6 @@ class If extends React.Component {
 
     register(child) {
         this._executables.push(child)
-        console.log('registering child (now ', this._executables.length, ')')
     }
 
     componentDidMount() {
@@ -75,8 +74,6 @@ class If extends React.Component {
         if (this.props.not == "t") {
             result = !result
         }
-
-        console.log('execute', result)
 
         if (result) {
             this.setState({'execute': true})

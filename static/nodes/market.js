@@ -8,8 +8,6 @@ class Market extends React.Component {
         super(props)
     }
 
-    register(child) {}
-
     render() {
         const { children, game } = this.props
         const childrenWithProps = addProps(children, {game, group: this})
@@ -31,8 +29,8 @@ class Market extends React.Component {
                         return (
                             <tr key={index}>
                                 <th>{child}</th>
-                                <td>{renderBuy(child)}</td>
-                                <td>{renderSell(child)}</td>
+                                <td>{this.renderBuy(child)}</td>
+                                <td>{this.renderSell(child)}</td>
                             </tr>
                         )
                     }
@@ -40,23 +38,28 @@ class Market extends React.Component {
             </table>
         )
     }
-}
 
-function renderBuy(child) {
-    const {buy} = child.props
-    if (!buy) {
-        return
+    renderBuy(child) {
+        const {buy} = child.props
+        if (!buy) {
+            return
+        }
+
+        return <button onClick={() => this.buy(child)}>{buy} Shards</button>
     }
 
-    return buy + " Shards"
-}
-function renderSell(child) {
-    const {sell} = child.props
-    if (!sell) {
-        return
+    buy(item) {alert('buy a thing')}
+
+    renderSell(child) {
+        const {sell} = child.props
+        if (!sell) {
+            return
+        }
+
+        return <button onClick={() => this.sell(child)}>{sell} Shards</button>
     }
 
-    return sell + " Shards"
+    sell(item) {alert('sell a thing')}
 }
 
 export default Market;

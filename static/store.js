@@ -12,17 +12,7 @@ const initialState = {
     player: null,
 }
 
-export default () => {
-    let state = window.localStorage.getItem("flapp.js");
-    if (state) {
-        try {
-            state = JSON.parse(state);
-        } catch (e) {
-            console.error('failed to read: ', e);
-            state = null;
-        }
-    }
-
+export function configureStore(state) {
     if (!state) {
         state = initialState;
     }

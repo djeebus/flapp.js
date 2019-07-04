@@ -1,9 +1,20 @@
 import React from 'react';
+import { ParentContext } from '../contexts';
 
-export default class Random extends React.Component {
+class Random extends React.Component {
+    constructor(props) {
+        super(props)
+
+        this.adjustments = []
+    }
+
     onClick() {
         const {game, dice=1} = this.props
         game.performRandomRoll(dice)
+    }
+
+    addAdjust(adjustment) {
+        this.adjustments.push(adjustment)
     }
 
     render() {
@@ -14,11 +25,15 @@ export default class Random extends React.Component {
         }
 
         return (
-            <a href="javascript:void(0)"
-               onClick={this.onClick.bind(this)}
-            >
-               {children}
-            </a>
+            <ParentContext.Provider value={this}>
+                <a href="javascript:void(0)"
+                onClick={this.onClick.bind(this)}
+                >
+                    {children}
+                </a>
+            </ParentContext.Provider>
         )
     }
 }
+
+export default Random

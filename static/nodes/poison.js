@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 
 import {addPoison} from '../actions'
 import {addProps} from '../util'
+import { ParentContext } from '../contexts';
 
 class Poison extends React.Component {
     constructor(props) {
@@ -22,7 +23,11 @@ class Poison extends React.Component {
     render() {
         const {children, game} = this.props
         const childrenWithProps = addProps(children, {game, parent: this})
-        return <span>{childrenWithProps}</span>
+        return (
+            <ParentContext.Provider value={this}>
+                <span>{childrenWithProps}</span>
+            </ParentContext.Provider>
+        )
     }
 }
 

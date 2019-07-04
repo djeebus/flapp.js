@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "dev": "webpack-dev-server"
+    "dev": "webpack-dev-server",
+    "test": "NODE_ENV=test jest"
   },
   "dependencies": {
     "query-string": "^5.0.1",
@@ -12,13 +13,20 @@
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
+    "babel-jest": "^23.2.0",
     "babel-loader": "^7.1.2",
     "babel-polyfill": "^6.26.0",
-    "babel-preset-env": "^1.6.1",
+    "babel-preset-env": "^1.7.0",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
+    "jest": "^23.2.0",
+    "react-test-renderer": "^16.4.1",
     "webpack": "^3.8.1",
     "webpack-dev-server": "^2.9.4",
-    "xml2json": "^0.11.0"
+    "xml2json": "^0.11.0",
+    "xmldom": "^0.1.27"
+  },
+  "jest": {
+    "setupTestFrameworkScriptFile": "./tools/jest/setup-framework.js"
   }
 }

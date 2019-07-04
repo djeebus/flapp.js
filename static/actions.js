@@ -54,6 +54,13 @@ export function addTick() {
     }
 }
 
+const TICK_GOD = 'TICK_GOD'
+export function tickGod(god) {
+    return {
+        type: TICK_GOD,
+    }
+}
+
 const ADD_POISON = 'ADD_POISON'
 export function addPoison(name, effects) {
     return {
@@ -87,8 +94,6 @@ export function setPlayer(player) {
 }
 
 export const reducer = (state = {}, action) => {
-    console.log(action);
-
     switch (action.type) {
         case NEW_GAME:
             return {

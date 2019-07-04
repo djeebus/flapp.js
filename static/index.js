@@ -4,9 +4,24 @@ import queryString from 'query-string'
 
 import {Game, GameContext} from './game'
 import {App} from './components/app'
-import configureStore from './store'
+import {configureStore} from './store'
+import { Provider } from 'react-redux';
 
-const store = configureStore();
+function getInitialState() {
+    let state = window.localStorage.getItem("flapp.js");
+    if (state) {
+        try {
+            state = JSON.parse(state);
+        } catch (e) {
+            console.error('failed to read: ', e);
+            state = null;
+        }
+    }
+    return state
+}
+
+const state = getInitialState();
+const store = configureStore(state);
 const game = new Game(store);
 
 const parsed = queryString.parse(location.search)
@@ -25,5 +40,7 @@ store.subscribe(function saveState() {
 })
 
 ReactDOM.render(
-    <App store={store} game={game} />,
+    <Provider store={store}>
+        <App game={game} />
+    </Provider>,
     document.getElementById('root'));

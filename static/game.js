@@ -1,19 +1,22 @@
-import React from 'react'
 import _ from 'lodash'
-import books from 'json-loader!../books.json';
-import {GO_TO_SECTION, gainStamina, loseShards, addTick} from './actions';
+import books from '../books.json';
+import {GO_TO_SECTION, gainStamina, loseShards} from './actions';
+import {DOMParser} from 'xmldom'
+import adjust from './nodes/adjust';
 
-function getDoc(bookId, file) {
+const TEXT_NODE = 3
+
+export function getDoc(bookId, file) {
     const book = 'book' + bookId
     let xml = books[book][file]
     if (!xml) {
         throw `cannot find ${book}:${file} `;
     }
 
+    console.log(book, file, xml)
     let parser = new DOMParser();
     let doc = parser.parseFromString(xml, 'text/xml');
-    console.log(`${book}/${file}`, doc)
-    return doc
+    return doc.documentElement
 }
 
 export class Game {
@@ -23,15 +26,15 @@ export class Game {
     }
 
     getAdventurers() {
-        const doc = getDoc(1, 'Adventurers.xml').documentElement
+        const doc = getDoc(1, 'Adventurers.xml')
 
         const professions = {}
         const common = {
             'inventory': [],
         }
 
-        for (let x = 0; x < doc.children.length; x++) {
-            const node = doc.children[x]
+        for (let x = 0; x < doc.childNodes.length; x++) {
+            const node = doc.childNodes[x]
             const attrs = node.attributes
 
             function getAmountAttr() {
@@ -40,24 +43,32 @@ export class Game {
 
             switch (node.localName) {
                 case 'abilities':
-                    const statNames = node.children[0].textContent
-                        .split(' ')
-                        .map(s => s.toLowerCase())
-                    const profNodes = [...node.children].slice(1)
-                    profNodes.forEach(p => {
-                        const attribs = p.attributes
-                        const profession = attribs.getNamedItem('name').value
-                        professions[profession] = {
-                            'abilities': {},
-                            'inventory': [],
-                            'profession': profession,
+                    let statNames;
+                    for (var y = 0; y < node.childNodes.length; y++) {
+                        const child = node.childNodes[y];
+                        switch (child.localName) {
+                            case 'header':
+                                statNames = child.textContent
+                                    .split(' ')
+                                    .map(s => s.toLowerCase())
+                                break;
+
+                            case 'profession':
+                                const attribs = child.attributes
+                                const profession = attribs.getNamedItem('name').value
+                                professions[profession] = {
+                                    'abilities': {},
+                                    'inventory': [],
+                                    'profession': profession,
+                                }
+                                const abilities = professions[profession]['abilities']
+                                const stats = child.textContent.split(' ').map(s => parseInt(s))
+                                for (let y = 0; y < stats.length; y++) {
+                                    abilities[statNames[y]] = stats[y]
+                                }
+                                break;
                         }
-                        const abilities = professions[profession]['abilities']
-                        const stats = p.textContent.split(' ').map(s => parseInt(s))
-                        for (let y = 0; y < stats.length; y++) {
-                            abilities[statNames[y]] = stats[y]
-                        }
-                    })
+                    }
                     break
 
                 case 'stamina':
@@ -73,8 +84,12 @@ export class Game {
                     break
 
                 case 'items':
-                    for (let y = 0; y < node.children.length; y++) {
-                        let item = node.children[y]
+                    for (let y = 0; y < node.childNodes.length; y++) {
+                        let item = node.childNodes[y]
+                        if (item.nodeType == TEXT_NODE) {
+                            continue;
+                        }
+
                         const [profession, parsed] = this._parseItem(item)
                         if (profession) {
                             professions[profession].inventory.push(parsed)
@@ -129,7 +144,7 @@ export class Game {
         const {book, section} = player
         const doc = getDoc(book, section + '.xml')
 
-        return doc.documentElement
+        return doc
     }
 
     getBoxes() {
@@ -159,12 +174,15 @@ export class Game {
         return bookTicks[section] || 0
     }
 
-    performAbilityRoll(ability, level) {
+    performAbilityRoll(ability, level, adjustment) {
         let {player} = this.store.getState()
         let currentLevel = player.abilities[ability];
 
         let result = this.roll(2)
-        console.log(`${result} > ${level}`)
+        console.log(`${result} + ${currentLevel} + ${adjustment} > ${level}`)
+
+        result += currentLevel
+        result += adjustment
 
         if (result > level) {
             alert(`You rolled a ${result} and succeeded!`)
@@ -235,7 +253,6 @@ export class Game {
 
     getVar(name) {
         const value = this.vars[name]
-        console.log(name, ' == ', value)
         return value
     }
 

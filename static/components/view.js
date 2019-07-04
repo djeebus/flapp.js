@@ -2,10 +2,15 @@ import React from 'react'
 import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
 
+import Adjust from '../nodes/adjust'
 import Armour from '../nodes/armour'
+import Buy from '../nodes/buy'
 import Choice from '../nodes/choice'
 import Choices from '../nodes/choices'
+import Curse from '../nodes/curse'
+import Desc from '../nodes/desc'
 import Difficulty from '../nodes/difficulty'
+import Disease from '../nodes/disease'
 import Effect from '../nodes/effect'
 import Else from '../nodes/else'
 import ElseIf from '../nodes/elseif'
@@ -17,6 +22,7 @@ import Group from '../nodes/group'
 import Header from '../nodes/header'
 import If from '../nodes/if'
 import Item from '../nodes/item'
+import Items from '../nodes/items'
 import Lose from '../nodes/lose'
 import Market from '../nodes/market'
 import Outcome from '../nodes/outcome'
@@ -24,15 +30,20 @@ import Outcomes from '../nodes/outcomes'
 import Poison from '../nodes/poison'
 import Random from '../nodes/random'
 import RankCheck from '../nodes/rankcheck'
+import Reroll from '../nodes/reroll'
 import Rest from '../nodes/rest'
 import Resurrection from '../nodes/resurrection'
+import Sell from '../nodes/sell'
 import Set from '../nodes/set'
+import Sold from '../nodes/sold'
 import Success from '../nodes/success'
 import Text from '../nodes/text'
 import Tick from '../nodes/tick'
 import Tool from '../nodes/tool'
 import Trade from '../nodes/trade'
-import Unknown from '../nodes/unknown'
+import Training from '../nodes/training'
+import Transfer from '../nodes/transfer'
+import unknownFactory from '../nodes/unknown'
 import Weapon from '../nodes/weapon'
 
 const
@@ -72,16 +83,14 @@ class View extends React.Component {
                 return this.parseElementNode(node, index, prev);
 
             case TEXT_NODE:
-                let text = node.wholeText.trim()
+                let text = node.nodeValue.trim()
                 if (text) {
-                    return <Text key={index}>{node.wholeText}</Text>
+                    return <Text key={index}>{node.nodeValue}</Text>
                 }
         }
     }
 
     parseElementNode(node, index, prev) {
-        console.log('parsing: ', node)
-
         let attrs = node.attributes;
 
         let props = {
@@ -89,48 +98,71 @@ class View extends React.Component {
             index: index,
             key: index,
             previous: prev,
+            store: this.props.store,
         };
-
-        for (var x = 0; x < attrs.length; x++) {
-            let attr = attrs[x];
-            props[attr.name] = attr.value;
-        }
 
         let children = this.parseNodes(node.childNodes);
         children = [...children]
 
         let components = {
+            'adjust': Adjust,
+            'adjustmoney': unknownFactory('adjustMoney'),
             'armour': Armour,
+            'buy': Buy,
             'choice': Choice,
             'choices': Choices,
+            'curse': Curse,
+            'desc': Desc,
+            'disease': Disease,
             'difficulty': Difficulty,
             'effect': Effect,
             'else': Else,
             'elseif': ElseIf,
+            'exclude': unknownFactory('exclude'),
+            'extrachoice': unknownFactory('extrachoice'),
             'failure': Failure,
             'fight': Fight,
+            'fightdamage': unknownFactory('fightdamage'),
+            'flee': unknownFactory('flee'),
             'gain': Gain,
             'goto': GoTo,
             'group': Group,
             'header': Header,
             'if': If,
+            'image': unknownFactory('image'),
+            'include': unknownFactory('include'),
             'item': Item,
+            'itemcache': unknownFactory('itemcache'),
+            'items': Items,
             'lose': Lose,
             'market': Market,
+            'moneycache': unknownFactory('moneycache'),
             'outcome': Outcome,
             'outcomes': Outcomes,
             'poison': Poison,
+            'price': unknownFactory('price'),
             'random': Random,
             'rankcheck': RankCheck,
+            'reroll': Reroll,
+            'return': unknownFactory('return'),
             'rest': Rest,
             'resurrection': Resurrection,
+            'sell': Sell,
             'set': Set,
+            'sold': Sold,
             'success': Success,
             'text': Text,
             'tick': Tick,
             'tool': Tool,
             'trade': Trade,
+            'training': Training,
+            'transfer': Transfer,
             'weapon': Weapon,
+        }
+
+        for (var x = 0; x < attrs.length; x++) {
+            let attr = attrs[x];
+            props[attr.name] = attr.value;
         }
 
         let Component = components[node.localName];
@@ -144,8 +176,7 @@ class View extends React.Component {
             case 'p': return <p {...props}>{children}</p>
         }
 
-        console.warn('Unknown tag: ', node.localName)
-        return <Unknown tag={node.localName} {...props}>{children}</Unknown>
+        throw 'Unknown tag: ' + node.localName
     }
 
     boxes(count) {
@@ -171,10 +202,12 @@ class View extends React.Component {
     }
 
     render() {
-        scrollTo(0, 0)
+        this.props.noScroll || scrollTo(0, 0)
 
-        let section = this.props.game.getSection()
-        let attrs = section.attributes;
+        const section = this.props.game.getSection()
+        const rootDoc = section
+        this.props.debug && console.log('section: ', rootDoc)
+        let attrs = rootDoc.attributes
         let name = textAttr(attrs, 'name')
         let boxes = intAttr(attrs, 'boxes')
 
@@ -182,13 +215,13 @@ class View extends React.Component {
             <div>
                 <h1>#{name || "unknown"}</h1>
                 {this.boxes(boxes)}
-                {[...this.parseNodes(section.childNodes)]}
+                {[...this.parseNodes(rootDoc.childNodes)]}
             </div>
         );
     }
 
     componentDidMount() {
-        scroll(0, 0)
+        this.props.noScroll || scroll(0, 0)
     }
 }
 
